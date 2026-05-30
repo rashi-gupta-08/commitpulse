@@ -65,6 +65,13 @@ describe('SVG Sanitizer Utilities', () => {
     it('returns default fallback for empty string', () => {
       expect(hexColor('')).toBe('000000');
     });
+
+    it('applies standard gray fallback for unrecognized hex strings', () => {
+      expect(hexColor('ZZZZZZ', '808080')).toBe('808080');
+      expect(hexColor('GGGGGG', '808080')).toBe('808080');
+      expect(hexColor('xyz999', '808080')).toBe('808080');
+      expect(hexColor('------', '808080')).toBe('808080');
+    });
   });
 
   describe('sanitizeHexColor', () => {
