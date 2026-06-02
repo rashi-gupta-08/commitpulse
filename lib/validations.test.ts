@@ -43,6 +43,10 @@ describe('streakParamsSchema — grace fallback behavior', () => {
   it('defaults to 1 when grace is omitted', () => {
     expect(parse({}).grace).toBe(1);
   });
+
+  it('defaults to 1 when grace is empty string', () => {
+    expect(parse({ grace: '' }).grace).toBe(1);
+  });
 });
 
 describe('validateGitHubUsername', () => {
@@ -565,9 +569,7 @@ describe('streakParamsSchema — grace validation', () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0]?.message).toBe(
-        'grace must be an integer between 0 and 7'
-      );
+      expect(result.error.issues[0]?.message).toBe('grace must be an integer between 0 and 7');
     }
   });
 
@@ -579,9 +581,7 @@ describe('streakParamsSchema — grace validation', () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0]?.message).toBe(
-        'grace must be an integer between 0 and 7'
-      );
+      expect(result.error.issues[0]?.message).toBe('grace must be an integer between 0 and 7');
     }
   });
 
@@ -593,9 +593,7 @@ describe('streakParamsSchema — grace validation', () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0]?.message).toBe(
-        'grace must be an integer between 0 and 7'
-      );
+      expect(result.error.issues[0]?.message).toBe('grace must be an integer between 0 and 7');
     }
   });
 
@@ -607,9 +605,7 @@ describe('streakParamsSchema — grace validation', () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0]?.message).toBe(
-        'grace must be an integer between 0 and 7'
-      );
+      expect(result.error.issues[0]?.message).toBe('grace must be an integer between 0 and 7');
     }
   });
 });
