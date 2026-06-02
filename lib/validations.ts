@@ -180,7 +180,18 @@ export const streakParamsSchema = z.object({
   delta_format: z.enum(['percent', 'absolute', 'both']).catch('percent').default('percent'),
   width: dimensionParam('width', 100, 1200),
   height: dimensionParam('height', 80, 800),
-  grace: z.string().optional().transform(toGraceValue).default(1),
+  grace: z
+    .string()
+    .optional()
+    .refine(
+      (val) => {
+        if (val === undefined) return true;
+        return /^\d+$/.test(val) && Number(val) >= 0 && Number(val) <= 7;
+      },
+      { message: 'grace must be an integer between 0 and 7' }
+    )
+    .transform((val) => (val === undefined ? 1 : Number(val)))
+    .default(1),
   mode: z.enum(['commits', 'loc']).catch('commits').default('commits'),
   repo: z.string().optional(),
   org: z.string().optional(),
