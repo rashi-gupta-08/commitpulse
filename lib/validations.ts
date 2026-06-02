@@ -288,6 +288,16 @@ const baseStreakParamsSchema = z.object({
     .transform((val) => (val === undefined || val === '' ? 1 : Number(val)))
     .default(1),
 
+
+        if (!val) return true;
+        const parsed = Number(val);
+        return !isNaN(parsed) && Number.isInteger(parsed) && parsed >= 0 && parsed <= 7;
+      },
+      { message: 'grace must be an integer between 0 and 7' }
+    )
+    .transform(toGraceValue)
+    .default(1),
+
   mode: z.enum(['commits', 'loc']).catch('commits').default('commits'),
   repo: z.string().optional(),
   org: z
