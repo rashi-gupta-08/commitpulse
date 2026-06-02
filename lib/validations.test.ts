@@ -6,6 +6,10 @@ import {
   validateGitHubUsername,
 } from './validations';
 
+function parse(params: Record<string, string>) {
+  return streakParamsSchema.parse({ user: 'octocat', ...params });
+}
+
 describe('streakParamsSchema — grace fallback behavior', () => {
   it('accepts "0" as a valid grace value', () => {
     expect(parse({ grace: '0' }).grace).toBe(0);
@@ -483,49 +487,47 @@ describe('streakParamsSchema', () => {
   });
 });
 
-it('should succeed when username contains hyphens', () => {
-  const result = streakParamsSchema.safeParse({
-    user: 'valid-user',
+describe('streakParamsSchema — user hyphen validation', () => {
+  it('should succeed when username contains hyphens', () => {
+    const result = streakParamsSchema.safeParse({
+      user: 'valid-user',
+    });
+
+    expect(result.success).toBe(true);
   });
 
-  expect(result.success).toBe(true);
-});
+  it('should succeed when username contains multiple hyphens', () => {
+    const result = streakParamsSchema.safeParse({
+      user: 'valid-user-name-123',
+    });
 
-it('should succeed when username contains multiple hyphens', () => {
-  const result = streakParamsSchema.safeParse({
-    user: 'valid-user-name-123',
+    expect(result.success).toBe(true);
   });
 
-  expect(result.success).toBe(true);
-});
+  it('should fail when username ends with hyphen', () => {
+    const result = streakParamsSchema.safeParse({
+      user: 'user-',
+    });
 
-it('should fail when username ends with hyphen', () => {
-  const result = streakParamsSchema.safeParse({
-    user: 'user-',
+    expect(result.success).toBe(false);
   });
 
-  expect(result.success).toBe(false);
-});
+  it('should fail when username starts with hyphen', () => {
+    const result = streakParamsSchema.safeParse({
+      user: '-user',
+    });
 
-it('should fail when username starts with hyphen', () => {
-  const result = streakParamsSchema.safeParse({
-    user: '-user',
+    expect(result.success).toBe(false);
   });
 
-  expect(result.success).toBe(false);
-});
+  it('should fail when username contains consecutive hyphens', () => {
+    const result = streakParamsSchema.safeParse({
+      user: 'user--name',
+    });
 
-it('should fail when username contains consecutive hyphens', () => {
-  const result = streakParamsSchema.safeParse({
-    user: 'user--name',
+    expect(result.success).toBe(false);
   });
-
-  expect(result.success).toBe(false);
 });
-
-function parse(params: Record<string, string>) {
-  return streakParamsSchema.parse({ user: 'octocat', ...params });
-}
 
 describe('streakParamsSchema — grace validation', () => {
   it('accepts grace=0', () => {
