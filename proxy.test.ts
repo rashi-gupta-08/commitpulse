@@ -1,6 +1,6 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
-import { proxy, config } from './proxy';
+import { middleware as proxy, config } from './middleware';
 import { rateLimit } from '@/lib/rate-limit';
 
 vi.mock('@/lib/rate-limit', () => ({
@@ -387,14 +387,14 @@ describe('proxy', () => {
 });
 
 describe('middleware.ts wiring', () => {
-  it('re-exports proxy as middleware so Next.js can invoke it', async () => {
+  it('middleware.ts exports a function named middleware', async () => {
     const mod = await import('./middleware');
 
     // Next.js looks for a named export called `middleware`
     expect(typeof mod.middleware).toBe('function');
   });
 
-  it('re-exports config so Next.js applies the route matcher', async () => {
+  it('middleware.ts exports config with a non-empty matcher array', async () => {
     const mod = await import('./middleware');
 
     expect(mod.config).toBeDefined();
@@ -402,10 +402,21 @@ describe('middleware.ts wiring', () => {
     expect(mod.config.matcher.length).toBeGreaterThan(0);
   });
 
-  it('middleware is the same function as proxy', async () => {
-    const { proxy } = await import('./proxy');
-    const { middleware } = await import('./middleware');
-
-    expect(middleware).toBe(proxy);
+  it('middleware covers all expected API routes', async () => {
+    const { config: mwConfig } = await import('./middleware');
+    const expected = [
+      '/api/streak/:path*',
+      '/api/github/:path*',
+      '/api/track-user/:path*',
+      '/api/stats/:path*',
+      '/api/og/:path*',
+      '/api/notify/:path*',
+      '/api/compare/:path*',
+      '/api/wrapped/:path*',
+      '/api/student/:path*',
+    ];
+    for (const route of expected) {
+      expect(mwConfig.matcher).toContain(route);
+    }
   });
 });
